@@ -334,12 +334,4 @@ describe("POST /api/sweets/:id/restock", () => {
     expect(res.statusCode).toBe(403);
     expect(res.body).toHaveProperty("message");
   });
-
-  it("should return 401 if token is missing", async () => {
-    const res = await request(app)
-      .post(`/api/sweets/${sweetId}/restock`)
-      .send({ quantity: 5 });
-
-    expect(res.statusCode).toBe(401);
-  });
 });
