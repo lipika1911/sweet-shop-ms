@@ -16,3 +16,12 @@ export const createSweet = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getSweets = async (req, res) => {
+  try {
+    const sweets = await Sweet.find();
+    res.status(200).json(sweets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
