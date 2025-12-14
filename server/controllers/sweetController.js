@@ -49,7 +49,7 @@ export const searchSweets = async (req, res) => {
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
 
-    const sweets = await Sweet.find(query);
+    const sweets = await Sweet.find(query).sort({ createdAt: -1 });
 
     res.status(200).json(sweets);
   } catch (error) {
