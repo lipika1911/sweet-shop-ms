@@ -35,6 +35,13 @@ describe("Auth API", () => {
   });
 
   it("should login an existing user", async () => {
+    await request(app)
+        .post("/api/auth/register")
+        .send({
+        name: "Lipika",
+        email: "lipika@test.com",
+        password: "password123",
+        });
     const res = await request(app)
         .post("/api/auth/login")
         .send({
