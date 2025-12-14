@@ -104,4 +104,19 @@ describe("Sweet API - Create Sweet", () => {
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThanOrEqual(2);
   });
+
+  it("should return empty array if no sweets exist", async () => {
+    const userToken = jwt.sign(
+        { id: "user456", role: "USER" },
+        process.env.JWT_SECRET
+    );
+
+    const res = await request(app)
+        .get("/api/sweets")
+        .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual([]);
+    });
+
 });
