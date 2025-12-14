@@ -290,3 +290,56 @@ describe("POST /api/sweets/:id/purchase", () => {
   });
 
 });
+
+describe("POST /api/sweets/:id/restock", () => {
+  let sweetId;
+  let adminToken;
+  let userToken;
+
+  beforeEach(async () => {
+    adminToken = generateTestToken("ADMIN");
+    userToken = generateTestToken("USER");
+
+    //create a sweet with initial stock
+    const res = await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "Peda",
+        category: "Indian",
+        price: 18,
+        quantity: 5,
+      });
+
+    sweetId = res.body._id;
+  });
+
+  it("should allow ADMIN to restock a sweet", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ quantity: 10 });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("quantity");
+    expect(res.body.quantity).toBe(15);
+  });
+
+  it("should block USER from restocking a sweet", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({ quantity: 5 });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if token is missing", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .send({ quantity: 5 });
+
+    expect(res.statusCode).toBe(401);
+  });
+});
