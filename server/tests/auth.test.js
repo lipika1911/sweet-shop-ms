@@ -38,19 +38,39 @@ describe("Auth API", () => {
     await request(app)
         .post("/api/auth/register")
         .send({
-        name: "Lipika",
-        email: "lipika@test.com",
-        password: "password123",
+            name: "Lipika",
+            email: "lipika@test.com",
+            password: "password123",
         });
-    const res = await request(app)
-        .post("/api/auth/login")
-        .send({
-        email: "lipika@test.com",
-        password: "password123",
+        const res = await request(app)
+            .post("/api/auth/login")
+            .send({
+            email: "lipika@test.com",
+            password: "password123",
         });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("token");
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty("token");
     });
 
+    it("should not allow duplicate user registration", async () => {
+        await request(app)
+            .post("/api/auth/register")
+            .send({
+            name: "Lipika",
+            email: "lipika@test.com",
+            password: "password123",
+            });
+
+        const res = await request(app)
+            .post("/api/auth/register")
+            .send({
+            name: "Lipika Duplicate",
+            email: "lipika@test.com",
+            password: "password123",
+            });
+
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("message");
+    });
 });
