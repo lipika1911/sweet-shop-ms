@@ -7,7 +7,7 @@ import {
   closeTestDB,
 } from "./setupDB.js";
 
-// Test environment setup
+// Test environment
 process.env.JWT_SECRET = "test-secret";
 
 const generateTestToken = (role) => {
@@ -30,7 +30,7 @@ afterAll(async () => {
   await closeTestDB();
 });
 
-describe("Sweet API", () => {
+describe("Sweet API - Create Sweet", () => {
   it("should allow ADMIN to create a sweet", async () => {
     const adminToken = generateTestToken("ADMIN");
 
