@@ -1,5 +1,24 @@
 import request from "supertest";
 import app from "../app.js";
+import {
+  connectTestDB,
+  clearTestDB,
+  closeTestDB,
+} from "./setupDB.js";
+
+process.env.JWT_SECRET = "test-secret";
+
+beforeAll(async () => {
+  await connectTestDB();
+});
+
+afterEach(async () => {
+  await clearTestDB();
+});
+
+afterAll(async () => {
+  await closeTestDB();
+});
 
 describe("Auth API", () => {
   it("should register a new user", async () => {
