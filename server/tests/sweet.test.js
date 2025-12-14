@@ -186,3 +186,54 @@ describe("PUT /api/sweets/:id", () => {
   });
 
 });
+
+describe("DELETE /api/sweets/:id", () => {
+  let sweetId;
+  let adminToken;
+  let userToken;
+
+  beforeEach(async () => {
+    adminToken = generateTestToken("ADMIN");
+    userToken = generateTestToken("USER");
+
+    const res = await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "Barfi",
+        category: "Indian",
+        price: 12,
+        quantity: 25,
+      });
+
+    sweetId = res.body._id;
+  });
+
+  it("should allow ADMIN to delete a sweet", async () => {
+    const res = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should block USER from deleting a sweet", async () => {
+    const res = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 404 if sweet does not exist", async () => {
+    const nonExistentId = "64f000000000000000000000";
+
+    const res = await request(app)
+      .delete(`/api/sweets/${nonExistentId}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(404);
+  });
+});
