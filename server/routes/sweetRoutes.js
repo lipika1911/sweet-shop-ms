@@ -1,5 +1,5 @@
 import express from "express";
-import { createSweet, getSweets } from "../controllers/sweetController.js";
+import { createSweet, getSweets, searchSweets } from "../controllers/sweetController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
 

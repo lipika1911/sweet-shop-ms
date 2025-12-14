@@ -120,3 +120,55 @@ describe("Sweet API - Create Sweet", () => {
     });
 
 });
+
+describe("PUT /api/sweets/:id", () => {
+  let sweetId;
+  let adminToken;
+  let userToken;
+
+  beforeEach(async () => {
+    adminToken = generateTestToken("ADMIN");
+    userToken = generateTestToken("USER");
+
+    // Arrange: create a sweet as ADMIN for each test
+    const res = await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "Ladoo",
+        category: "Indian",
+        price: 15,
+        quantity: 40,
+      });
+
+    sweetId = res.body._id;
+  });
+
+  it("should allow ADMIN to update a sweet", async () => {
+    const res = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        price: 20,
+        quantity: 60,
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatchObject({
+      price: 20,
+      quantity: 60,
+    });
+  });
+
+  it("should block USER from updating a sweet", async () => {
+    const res = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        price: 30,
+      });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty("message");
+  });
+});
