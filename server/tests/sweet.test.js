@@ -237,3 +237,56 @@ describe("DELETE /api/sweets/:id", () => {
     expect(res.statusCode).toBe(404);
   });
 });
+
+describe("POST /api/sweets/:id/purchase", () => {
+  let sweetId;
+  let adminToken;
+  let userToken;
+
+  beforeEach(async () => {
+    adminToken = generateTestToken("ADMIN");
+    userToken = generateTestToken("USER");
+
+    // Arrange: create sweet with limited quantity
+    const res = await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "Kaju Katli",
+        category: "Indian",
+        price: 30,
+        quantity: 2,
+      });
+
+    sweetId = res.body._id;
+  });
+
+  it("should allow USER to purchase a sweet and decrement quantity", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("quantity");
+    expect(res.body.quantity).toBe(1);
+  });
+
+  it("should not allow purchase when quantity is zero", async () => {
+    await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    // Third attempt to purchase should fail
+    const res = await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty("message");
+  });
+
+});
