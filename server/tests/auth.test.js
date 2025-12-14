@@ -69,7 +69,6 @@ describe("Auth API", () => {
             password: "password123",
             });
 
-
         expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty("message");
     });

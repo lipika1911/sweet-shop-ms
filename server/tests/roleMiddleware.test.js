@@ -50,4 +50,10 @@ describe("Role-based authorization middleware", () => {
 
     expect(res.statusCode).toBe(200);
   });
+
+  it("should return 401 when token is missing", async () => {
+    const res = await request(app).get("/api/admin-test");
+
+    expect(res.statusCode).toBe(401);
+  });
 });
