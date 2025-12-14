@@ -171,4 +171,18 @@ describe("PUT /api/sweets/:id", () => {
     expect(res.statusCode).toBe(403);
     expect(res.body).toHaveProperty("message");
   });
+
+  it("should return 404 if sweet does not exist", async () => {
+    const nonExistentId = "64f000000000000000000000";
+
+    const res = await request(app)
+      .put(`/api/sweets/${nonExistentId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        price: 50,
+      });
+
+    expect(res.statusCode).toBe(404);
+  });
+
 });

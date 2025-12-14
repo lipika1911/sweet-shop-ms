@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Sweet from "../models/Sweet.js";
 
 export const createSweet = async (req, res) => {
@@ -60,6 +61,10 @@ export const searchSweets = async (req, res) => {
 export const updateSweet = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid sweet ID" });
+    }
 
     const updatedSweet = await Sweet.findByIdAndUpdate(
       id,
