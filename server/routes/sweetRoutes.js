@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.post("/", authMiddleware, adminMiddleware, createSweet);
 router.get("/", authMiddleware, getSweets);
+router.get("/search", authMiddleware, searchSweets);
 
 export default router;
