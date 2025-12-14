@@ -102,3 +102,29 @@ export const deleteSweet = async (req, res) => {
   }
 };
 
+export const purchaseSweet = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid sweet ID" });
+    }
+
+    const sweet = await Sweet.findById(id);
+
+    if (!sweet) {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+
+    if (sweet.quantity <= 0) {
+      return res.status(400).json({ message: "Out of stock" });
+    }
+
+    sweet.quantity -= 1;
+    await sweet.save();
+
+    res.status(200).json(sweet);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
