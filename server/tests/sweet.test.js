@@ -52,4 +52,21 @@ describe("Sweet API - Create Sweet", () => {
       quantity: 50,
     });
   });
+
+  it("should block USER from creating a sweet", async () => {
+    const userToken = generateTestToken("USER");
+
+    const res = await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "Rasgulla",
+        category: "Indian",
+        price: 8,
+        quantity: 20,
+      });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty("message");
+  });
 });

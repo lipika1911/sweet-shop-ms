@@ -5,11 +5,6 @@ import adminMiddleware from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
-router.post(
-  "/",
-  authMiddleware,
-  adminMiddleware,
-  createSweet
-);
+router.post("/", authMiddleware, adminMiddleware, createSweet);
 
 export default router;
