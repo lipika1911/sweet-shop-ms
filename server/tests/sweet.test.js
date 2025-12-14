@@ -69,4 +69,39 @@ describe("Sweet API - Create Sweet", () => {
     expect(res.statusCode).toBe(403);
     expect(res.body).toHaveProperty("message");
   });
+
+  it("should return list of sweets for authenticated user", async () => {
+    const adminToken = generateTestToken("ADMIN");
+    const userToken = generateTestToken("USER");
+
+    // create sweets as admin
+    await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "Barfi",
+        category: "Indian",
+        price: 12,
+        quantity: 30,
+      });
+
+    await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "Ladoo",
+        category: "Indian",
+        price: 6,
+        quantity: 100,
+      });
+
+    // fetch sweets
+    const res = await request(app)
+      .get("/api/sweets")
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThanOrEqual(2);
+  });
 });
